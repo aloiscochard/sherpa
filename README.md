@@ -25,7 +25,7 @@ Scala 2.10 and Scalaz 7-M1 are needed.
       Person("Alois Cochard", 27, List("alois.cochard@gmail.com", "alois.cochard@opencredo.com"))
     ).unsafePerformIO match {
       case Success(bytes) => println {
-        Jackson.parse[Person](bytes).unsafePerformIO.getOrElse(null).emails.toList
+        Jackson.parse[Person](bytes).unsafePerformIO
       }
       case _ =>
     }
