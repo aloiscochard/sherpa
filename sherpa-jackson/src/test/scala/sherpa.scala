@@ -22,9 +22,9 @@ class JacksonSpec extends Specification {
       import Person.mapper._
 
       val alois = Person("Alois Cochard", 27, List("alois.cochard@gmail.com", "alois.cochard@opencredo.com"))
-      val bytes = Jackson.generate(alois).unsafePerformIO.getOrElse(ByteString())
+      val bytes = Jackson.generate(alois)
 
-      Jackson.parse[Person](bytes).unsafePerformIO.getOrElse(null) mustEqual alois
+      Jackson.parse[Person](bytes) mustEqual Right(alois)
     }
   }
 }

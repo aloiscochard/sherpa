@@ -5,10 +5,7 @@
 //
 //  (c) 2012, Alois Cochard
 
-import scalaz._
-import Scalaz._
-import scalaz.effect._
-
+import sherpa.effect._
 
 // TODO Option
 // TODO Array (fixed size)
@@ -51,14 +48,11 @@ package object sherpa {
     extractor => reader(extractor).map(serializable.get(_))
 
   trait Serializer[F, G <: Generator, E <: Extractor] {
-    def generate[T](value: T)(implicit writer: Writer[T, G]): IO[Validation[SerializerError, F]]
-    def parse[T](input: F)(implicit reader: Reader[T, E]): IO[Validation[SerializerError, T]]
+    def generate[T](value: T)(implicit writer: Writer[T, G]): F
+    def parse[T](input: F)(implicit reader: Reader[T, E]): Either[SerializerError, T]
   }
 
-  // TODO
-  //def generate[T, G <: Generator, F](value: T)(implicit serializer: Serializer[F, G, _], writer: Writer[T, G]) =
-  //  serializer.generate(value)
-
+  // TODO Add other errors
   sealed trait SerializerError
   case object InvalidFormat extends SerializerError
 

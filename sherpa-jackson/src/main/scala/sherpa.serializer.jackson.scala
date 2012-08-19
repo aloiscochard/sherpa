@@ -9,9 +9,7 @@ package serializer
 
 import scala.collection.JavaConverters._
 
-import scalaz.{Reader => _, Writer => _, _}
-import Scalaz._
-import scalaz.effect._
+import sherpa.effect._
 
 import java.io.ByteArrayOutputStream
 import com.fasterxml.jackson.core.JsonFactory
@@ -27,18 +25,18 @@ package object jackson {
   object Jackson extends JacksonSerializer
 
   trait JacksonSerializer extends Serializer[ByteString, DefaultGenerator, DefaultExtractor] {
-    override def generate[T](value: T)(implicit writer: Writer[T, DefaultGenerator]) = IO {
+    override def generate[T](value: T)(implicit writer: Writer[T, DefaultGenerator]) = {
       val generator = new JacksonGenerator
       writer(value)(generator).unsafePerformIO
-      generator.output().success
+      generator.output()
     }
 
-    override def parse[T](input: ByteString)(implicit reader: Reader[T, DefaultExtractor]) = IO {
+    override def parse[T](input: ByteString)(implicit reader: Reader[T, DefaultExtractor]) = {
       val extractor = new JacksonExtractor(input)
-      reader(extractor).unsafePerformIO.success
+      Right(reader(extractor).unsafePerformIO)
     }
 
-    def parse[T](input: String)(implicit reader: Reader[T, DefaultExtractor]): IO[Validation[SerializerError, T]] =
+    def parse[T](input: String)(implicit reader: Reader[T, DefaultExtractor]): Either[SerializerError, T] =
       parse[T](ByteString(input))
   }
 
@@ -56,14 +54,14 @@ package object jackson {
       generator.writeEndObject
     }
 
-    def writeBoolean(value: Boolean): scalaz.effect.IO[Unit] = IO { generator.writeBoolean(value) }
-    def writeChar(value: Char): scalaz.effect.IO[Unit] = writeString(value.toString)
-    def writeDouble(value: Double): scalaz.effect.IO[Unit] = IO { generator.writeNumber(value) }
-    def writeFloat(value: Float): scalaz.effect.IO[Unit] = IO { generator.writeNumber(value) }
-    def writeInt(value: Int): scalaz.effect.IO[Unit] = IO { generator.writeNumber(value) }
-    def writeLong(value: Long): scalaz.effect.IO[Unit] = IO { generator.writeNumber(value) }
-    def writeShort(value: Short): scalaz.effect.IO[Unit] = IO { generator.writeNumber(value) }
-    def writeString(value: String): scalaz.effect.IO[Unit] = IO { generator.writeString(value) }
+    def writeBoolean(value: Boolean): IO[Unit] = IO { generator.writeBoolean(value) }
+    def writeChar(value: Char): IO[Unit] = writeString(value.toString)
+    def writeDouble(value: Double): IO[Unit] = IO { generator.writeNumber(value) }
+    def writeFloat(value: Float): IO[Unit] = IO { generator.writeNumber(value) }
+    def writeInt(value: Int): IO[Unit] = IO { generator.writeNumber(value) }
+    def writeLong(value: Long): IO[Unit] = IO { generator.writeNumber(value) }
+    def writeShort(value: Short): IO[Unit] = IO { generator.writeNumber(value) }
+    def writeString(value: String): IO[Unit] = IO { generator.writeString(value) }
 
     def writeSeq[T](f: EntityGenerator[String] => Seq[IO[Unit]]): IO[Unit] = IO {
       generator.writeStartArray
