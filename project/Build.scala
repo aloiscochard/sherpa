@@ -21,19 +21,26 @@ object SherpaBuild extends Build {
     "sherpa",
     file ("."),
     settings = buildSettings
-  ) aggregate (sherpa_core, sherpa_jackson)
+  ) aggregate (sherpa_core, sherpa_scalaz, sherpa_jackson)
 
   lazy val sherpa_core = Project(
     "sherpa-core",
     file("sherpa-core"),
     settings = buildSettings ++ testDependencies ++ Seq(
-      libraryDependencies ++= Seq(
-        "org.scalaz" %% "scalaz-core" % "7.0.0-M1",
-        "org.scalaz" %% "scalaz-effect" % "7.0.0-M1"
-      ),
       libraryDependencies <+= (scalaVersion)("org.scala-lang" % "scala-compiler" % _)
     )
   )
+
+  lazy val sherpa_scalaz = Project(
+    "sherpa-scalaz",
+    file("sherpa-scalaz"),
+    settings = buildSettings ++ testDependencies ++ Seq(
+      libraryDependencies ++= Seq(
+        "org.scalaz" %% "scalaz-core" % "7.0.0-M1",
+        "org.scalaz" %% "scalaz-effect" % "7.0.0-M1"
+      )
+    )
+  ) dependsOn (sherpa_core)
 
   lazy val sherpa_jackson = Project(
     "sherpa-jackson",

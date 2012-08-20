@@ -1,17 +1,15 @@
 # Sherpa
 Sherpa is a serialization toolkit and a 'reflection-less' case classes mapper for the [Scala](http://www.scala-lang.org) programming language.
 
- * sherpa-core: Serialization ToolKit with compile time case classes mapping
- * sherpa-jackson: FasterXML [Jackson](http://wiki.fasterxml.com/JacksonHome) integration module
+ * sherpa-core: Serialization toolkit with compile time (macro-oriented) case classes mapping
+ * sherpa-jackson: [Jackson](http://wiki.fasterxml.com/JacksonHome) binding
+ * sherpa-scalaz: [Scalaz](http://github.com/scalaz/scalaz) (7-M1) integration module
 
-Scala 2.10 and Scalaz 7-M1 are needed.
+As this project is using macro, it need Scala 2.10
 
 **Sherpa is currently in early phase**
 
 ## Example usage
-
-    import scalaz._
-    import Scalaz._
 
     import sherpa._
     import sherpa.serializer.jackson._
@@ -21,16 +19,21 @@ Scala 2.10 and Scalaz 7-M1 are needed.
     val mapper = Mapper[Person]
     import mapper._
 
-    Jackson.generate(
-      Person("Alois Cochard", 27, List("alois.cochard@gmail.com", "alois.cochard@opencredo.com"))
-    ).unsafePerformIO match {
-      case Success(bytes) => println {
-        Jackson.parse[Person](bytes).unsafePerformIO
-      }
-      case _ =>
-    }
+    val person = Person("Alois Cochard", 27, List("alois.cochard@gmail.com", "alois.cochard@opencredo.com"))
 
-    // Success(Person(Alois Cochard,27,Stream(alois.cochard@gmail.com, ?)))
+    // Using mapper directly (serializer resolved implicitly)
+    parse(generate(alois)) // = Right(Person(Alois Cochard,27,Stream(alois.cochard@gmail.com, ?)))
+
+    // Using serializer directly (mapper resolved implicitly)
+    Jackson.parse[Person](Jackson.generate(alois)) // = Right(Person(Alois Cochard,27,Stream(alois.cochard@gmail.com, ?)))
+      
+
+    // Or using the Scalaz integration
+    import sherpa.scalaz._
+    
+    serializer(Jackson).generate(alois) // = IO[ByteString]
+      .map(bytes =>
+        serializer(Jackson).parse[Person](bytes)) // == Success(Person(Alois Cochard,27,Stream(alois.cochard@gmail.com, ?)))
 
 ## Contribution Policy
 
