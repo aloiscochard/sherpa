@@ -14,7 +14,7 @@ As this project is using macro, it need Scala 2.10
     import sherpa._
     import sherpa.serializer.jackson._
 
-    case class Person(name: String, age: Int, emails: Seq[String]) // TODO Fix why it fail with List
+    case class Person(name: String, age: Int, emails: Seq[String])
 
     val mapper = Mapper[Person]
     import mapper._
