@@ -28,13 +28,16 @@ As this project is using macro, it need Scala 2.10
     Jackson.parse[Person](Jackson.generate(alois)) // = Right(Person(Alois Cochard,27,Stream(alois.cochard@gmail.com, ?)))
       
 
-    // Or using the Scalaz integration
+    // Or using the Scalaz integration (sherpa-scalaz needed)
     import sherpa.scalaz._
     
-    serializer(Jackson).generate(alois) // = IO[ByteString]
-      .map(bytes =>
-        serializer(Jackson).parse[Person](bytes)) // == Success(Person(Alois Cochard,27,Stream(alois.cochard@gmail.com, ?)))
-
+    serializer(Jackson).generate(alois)
+    // = IO[ByteString]
+      .map(bytes => serializer(Jackson).parse[Person](bytes))
+    // = IO[Validation[SerializerError, Person]]
+      .unsafePerformIO()
+    // = Success(Person(Alois Cochard,27,Stream(alois.cochard@gmail.com, ?))))
+    
 ## Contribution Policy
 
 Contributions via GitHub pull requests are gladly accepted from their original author.
