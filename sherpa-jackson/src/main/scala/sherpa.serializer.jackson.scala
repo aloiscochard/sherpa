@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.JsonNode
 
 package object jackson {
 
-  object Jackson extends JacksonSerializer
+  implicit object Jackson extends JacksonSerializer
 
   trait JacksonSerializer extends Serializer[ByteString, DefaultGenerator, DefaultExtractor] {
     override def generate[T](value: T)(implicit writer: Writer[T, DefaultGenerator]) = {
@@ -35,9 +35,6 @@ package object jackson {
       val extractor = new JacksonExtractor(input)
       Right(reader(extractor).unsafePerformIO)
     }
-
-    def parse[T](input: String)(implicit reader: Reader[T, DefaultExtractor]): Either[SerializerError, T] =
-      parse[T](ByteString(input))
   }
 
   class JacksonGenerator extends EntityGenerator[String] {

@@ -11,21 +11,25 @@ import org.specs2.mutable._
 
 import sherpa.serializer.jackson._
 
-case class Person(name: String, age: Int, emails: Seq[String]) // TODO Fix why it fail with List
+case class Person(name: String, age: Int, emails: Seq[String]) // TODO Fix failure with List
 object Person { val mapper = Mapper[Person] }
 
 class JacksonSpec extends Specification {
 
   "sherpa-jackson" should {
 
-    "work" in {
+    "support syntax on mapper" in {
       import Person.mapper._
-
       val alois = Person("Alois Cochard", 27, List("alois.cochard@gmail.com", "alois.cochard@opencredo.com"))
-      val bytes = Jackson.generate(alois)
-
-      Jackson.parse[Person](bytes) mustEqual Right(alois)
+      parse(generate(alois)) mustEqual Right(alois)
     }
+
+    "support syntax on serializer" in {
+      import Person.mapper._
+      val alois = Person("Alois Cochard", 27, List("alois.cochard@gmail.com", "alois.cochard@opencredo.com"))
+      Jackson.parse[Person](Jackson.generate(alois)) mustEqual Right(alois)
+    }
+
   }
 }
 

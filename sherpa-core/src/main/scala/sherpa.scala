@@ -26,9 +26,14 @@ package object sherpa {
 
     implicit def writer: Writer[T, G]
     implicit def reader: Reader[T, E]
+
+    def generate[F](value: T)(implicit serializer: Serializer[F, G, E]) =
+      serializer.generate(value)
+    def parse[F](input: F)(implicit serializer: Serializer[F, G, E]) =
+      serializer.parse[T](input)
   }
 
-  // TODO Could be potentially replaced with scalaz Reader/Writer monads
+
   type Writer[T, G <: Generator] = T => G => IO[Unit]
   object Writer { def apply[T, G <: Generator](f: T => G => IO[Unit]) = f }
 
