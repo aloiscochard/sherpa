@@ -33,7 +33,7 @@ As this project is using macro, it need Scala 2.10
     
     serializer(Jackson).generate(alois)
     // = IO[ByteString]
-      .map(bytes => serializer(Jackson).parse[Person](bytes))
+      .flatMap(bytes => serializer(Jackson).parse[Person](bytes))
     // = IO[Validation[SerializerError, Person]]
       .unsafePerformIO()
     // = Success(Person(Alois Cochard,27,Stream(alois.cochard@gmail.com, ?))))
