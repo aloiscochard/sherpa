@@ -53,6 +53,15 @@ object SherpaBuild extends Build {
     )
   ) dependsOn (sherpa_core)
 
+  lazy val sherpa_typesafe_config = Project(
+    "sherpa-typesafe-config",
+    file("sherpa-typesafe-config"),
+    settings = buildSettings ++ testDependencies ++ Seq(
+      libraryDependencies += "com.typesafe" % "config" % "0.5.0"
+    )
+  ) dependsOn (sherpa_core)
+
+
   val testDependencies = Seq(libraryDependencies += "org.specs2" %% "specs2" % "1.11" % "test")
 }
 
